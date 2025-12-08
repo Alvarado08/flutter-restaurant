@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaurant/pages/auth/login_screen.dart';
+import 'package:flutter_restaurant/service/auth_service.dart';
+import 'package:flutter_restaurant/widgets/snack_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -12,6 +14,44 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  final AuthService _authService = AuthService();
+  bool isLoading = false;
+  bool isPasswordHidden = true;
+
+  void _signUp() async {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (!mounted) return;
+    setState(() {
+      isLoading = true;
+    });
+
+    if (!email.contains('@') || !email.contains('.com')) {
+      showSnackBar(context, "Please enter a valid email address.");
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    String? result = await _authService.signup(email, password);
+    if (result == null) {
+      // Sign up successful, navigate to login screen
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => LogInScreen()),
+      );
+      showSnackBar(context, "Sign up successful! Please log in.");
+    } else {
+      // Show error message
+      if (!mounted) return;
+      showSnackBar(context, result);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,13 +91,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
               decoration: InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.visibility),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isPasswordHidden = !isPasswordHidden;
+                    });
+                  },
+                  icon: Icon(
+                    isPasswordHidden ? Icons.visibility : Icons.visibility_off,
+                  ),
+                ),
               ),
-              obscureText: true,
+              obscureText: isPasswordHidden,
             ),
             SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: isLoading ? null : _signUp,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
@@ -66,10 +115,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                'Sign Up',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
             SizedBox(height: 20),
             Row(

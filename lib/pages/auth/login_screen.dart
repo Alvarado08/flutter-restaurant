@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaurant/pages/auth/signup_screen.dart';
+import 'package:flutter_restaurant/pages/home/home_screen.dart';
+import 'package:flutter_restaurant/service/auth_service.dart';
+import 'package:flutter_restaurant/widgets/snack_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class LogInScreen extends StatefulWidget {
@@ -12,6 +15,36 @@ class LogInScreen extends StatefulWidget {
 class _LogInScreenState extends State<LogInScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  final AuthService _authService = AuthService();
+  bool isLoading = false;
+  bool isPasswordHidden = true;
+
+  void _logIn() async {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (!mounted) return;
+    setState(() {
+      isLoading = true;
+    });
+
+    String? result = await _authService.login(email, password);
+    if (result == null) {
+      // Log in successful, navigate to home screen
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomeScreen()),
+      );
+      showSnackBar(context, "Log in successful! Welcome back!");
+    } else {
+      // Show error message
+      if (!mounted) return;
+      showSnackBar(context, result);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,13 +84,22 @@ class _LogInScreenState extends State<LogInScreen> {
               decoration: InputDecoration(
                 labelText: 'Password',
                 border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.visibility),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isPasswordHidden = !isPasswordHidden;
+                    });
+                  },
+                  icon: Icon(
+                    isPasswordHidden ? Icons.visibility : Icons.visibility_off,
+                  ),
+                ),
               ),
-              obscureText: true,
+              obscureText: isPasswordHidden,
             ),
             SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: isLoading ? null : _logIn,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
@@ -66,10 +108,15 @@ class _LogInScreenState extends State<LogInScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                'Log In',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : const Text(
+                      'Log In',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
             SizedBox(height: 20),
             Row(
