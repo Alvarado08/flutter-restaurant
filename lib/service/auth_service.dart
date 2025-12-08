@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_restaurant/pages/auth/login_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
@@ -43,9 +42,6 @@ class AuthService {
     try {
       await supabase.auth.signOut();
       if (!context.mounted) return;
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => LogInScreen()));
     } catch (e) {
       print("Logout error: $e");
     }
