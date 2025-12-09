@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_restaurant/pages/auth/login_screen.dart';
+import 'package:flutter_restaurant/service/auth_check.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,12 +20,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Restaurant',
+      title: 'Flutter Restaurant Delivery',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const LogInScreen(),
+      home: AuthCheck(),
     );
   }
 }
