@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaurant/pages/auth/signup_screen.dart';
-import 'package:flutter_restaurant/pages/home/home_screen.dart';
+import 'package:flutter_restaurant/pages/home/onboarding_screen.dart';
 import 'package:flutter_restaurant/service/auth_service.dart';
 import 'package:flutter_restaurant/widgets/snack_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -35,7 +35,7 @@ class _LogInScreenState extends State<LogInScreen> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => HomeScreen()),
+        MaterialPageRoute(builder: (_) => OnboardingScreen()),
       );
       showSnackBar(context, "Log in successful! Welcome back!");
     } else {
