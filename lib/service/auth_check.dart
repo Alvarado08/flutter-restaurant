@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaurant/pages/auth/login_screen.dart';
-import 'package:flutter_restaurant/pages/home/home_screen.dart';
+import 'package:flutter_restaurant/pages/home/onboarding_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthCheck extends StatelessWidget {
@@ -16,7 +16,7 @@ class AuthCheck extends StatelessWidget {
         final session = supabase.auth.currentSession;
         if (session != null) {
           // User is logged in
-          return HomeScreen();
+          return OnboardingScreen();
         } else {
           // User is not logged in
           return LogInScreen();
